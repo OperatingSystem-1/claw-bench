@@ -1,1 +1,14 @@
-
+{
+  "timestamp": "2026-02-11T01:00:34Z",
+  "model": "unknown",
+  "session": "bench-68399-1770771411",
+  "results": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0,
+    "critical": 0
+  },
+  "tests": [
+    {"name":"integration_discovery","status":"pass","message":"Full integration discovery: recognized gaps (3/3) AND installed tool via conversation","duration_ms":223000}
+  ]
+}

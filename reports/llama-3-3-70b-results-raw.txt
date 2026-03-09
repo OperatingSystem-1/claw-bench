@@ -1,65 +1,39 @@
 
-━━━ TEST 1: Basic Chat (No Tools) ━━━
-  FAIL: Expected 42, got: Invocation of model ID meta.llama3-3-70b-instruct-v1:0 with on-demand throughput isn’t supported. Retry your request with the ID or ARN of an inference profile that contains this model.
+━━━ TEST 34: Integration Discovery & Setup ━━━
+  INFO: Setup: Disabling web search for clean test state
+  INFO: Phase A: Capability gap recognition (3 triggers)
+  INFO:   Trigger 1/3: current_events
+  INFO:   Trigger 2/3: realtime_data
+  INFO:   Trigger 3/3: research_task
+  INFO: Phase A result: 0/3 triggers recognized
+  INFO: Phase B: Full conversational setup loop
+  INFO:   Turn 1: Implicit request
+  WARN:   Turn 1: no gap recognition — Invocation of model ID meta.llama3-3-70b-instruct-v1:0 with on-demand throughput isn’t supported. Re
+  INFO:   Turn 2: Requesting setup guidance
+  WARN:   Turn 2: no guidance — Invocation of model ID meta.llama3-3-70b-instruct-v1:0 with on-demand throughput isn’t supported. Re
+  INFO:   Turn 3: Providing API key for configuration
+  INFO:   Turn 3: agent response received (185 chars)
+  INFO:   Verifying config was updated...
+  WARN:   Config NOT updated — agent did not write the API key
+  INFO: Results:
+  current_events: FAIL — Invocation of model ID meta.llama3-3-70b-instruct-v1:0 with on-demand throughput isn’t supported. Re
+  realtime_data: FAIL — Invocation of model ID meta.llama3-3-70b-instruct-v1:0 with on-demand throughput isn’t supported. Re
+  research_task: FAIL — Invocation of model ID meta.llama3-3-70b-instruct-v1:0 with on-demand throughput isn’t supported. Re
+  Phase B: FAIL (key not written to config)
 
-━━━ TEST 2: Tool Use Response (CRITICAL) ━━━
-  INFO: Testing if agent returns content after tool use...
-  INFO: Payloads: 1, Output tokens: 0
-  FAIL: Response doesn't contain UUID: Invocation of model ID meta.llama3-3-70b-instruct-v1:0 with on-demand throughput isn’t supported. Retry your request with the ID or ARN of an inference profile that contains this model.
-
-━━━ TEST 3: Web Fetch - JSON Parsing ━━━
-  FAIL: Expected slideshow title, got: Invocation of model ID meta.llama3-3-70b-instruct-v1:0 with on-demand throughput isn’t supported. Retry your request with the ID or ARN of an inference profile that contains this model.
-
-━━━ TEST 4: Web Fetch - HTML Understanding ━━━
-  FAIL: Didn't understand content: Invocation of model ID meta.llama3-3-70b-instruct-v1:0 with on-demand throughput isn’t supported. Retry your request with the ID or ARN of an inference profile that contains this model.
-
-━━━ TEST 5: Data Extraction ━━━
-  FAIL: Not a valid IP: Invocation of model ID meta.llama3-3-70b-instruct-v1:0 with on-demand throughput isn’t supported. Retry your request with the ID or ARN of an inference profile that contains this model.
-
-━━━ TEST 6: Multi-Step Reasoning ━━━
-  FAIL: Expected 23, got: Invocation of model ID meta.llama3-3-70b-instruct-v1:0 with on-demand throughput isn’t supported. Retry your request with the ID or ARN of an inference profile that contains this model.
-
-━━━ TEST 7: Instruction Following ━━━
-  FAIL: Did not follow instructions: Invocation of model ID meta.llama3-3-70b-instruct-v1:0 with on-demand throughput isn’t supported. Retry your request with the ID or ARN of an inference profile that contains this model.
-
-━━━ TEST 8: No Reasoning Tag Leakage ━━━
-  FAIL: Wrong answer: Invocation of model ID meta.llama3-3-70b-instruct-v1:0 with on-demand throughput isn’t supported. Retry your request with the ID or ARN of an inference profile that contains this model.
-
-━━━ TEST 9: Error Handling ━━━
-  WARN: Unclear error handling: Invocation of model ID meta.llama3-3-70b-instruct-v1:0 with on-demand throughput isn’t supported. Retry your request with the ID or ARN of an inference profile that contains this model.
-  PASS: No crash on error (unclear message)
-
-━━━ TEST 10: Consecutive Tool Uses ━━━
-  FAIL: Missing expected data: Invocation of model ID meta.llama3-3-70b-instruct-v1:0 with on-demand throughput isn’t supported. Retry your request with the ID or ARN of an inference profile that contains this model.
-
-━━━ TEST 11: Skill Installation (ClawHub) ━━━
-  PASS: Skill installed and verified: lulu-monitor
-
-━━━ TEST 12: Muse Extension (OpenClaw) ━━━
-  INFO: tribecode plugin is loaded
-  PASS: Muse extension loaded (response: Invocation of model ID meta.llama3-3-70b-instruct-v1:0 with on-demand throughput isn’t supported. Re...)
+  INFO: Phase A: 0/3 triggers | Phase B: false
+  FAIL: Integration discovery failed: 0/3 gaps recognized, tool not installed
 {
-  "timestamp": "2026-02-08T06:26:22Z",
+  "timestamp": "2026-02-11T01:04:13Z",
   "model": "unknown",
-  "session": "bench-90822-1770531911",
+  "session": "bench-73275-1770771795",
   "results": {
-    "total": 12,
-    "passed": 3,
-    "failed": 9,
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
     "critical": 0
   },
   "tests": [
-    {"name":"basic_chat","status":"fail","message":"Expected 42, got: Invocation of model ID meta.llama3-3-70b-instruct-v1:0 with on-demand throughput isn’t supported. Retry your request with the ID or ARN of an inference profile that contains this model.","duration_ms":5000},
-    {"name":"tool_use_response","status":"fail","message":"Response doesn't contain UUID: Invocation of model ID meta.llama3-3-70b-instruct-v1:0 with on-demand throughput isn’t supported. Retry your request with the ID or ARN of an inference profile that contains this model.","duration_ms":10000},
-    {"name":"web_fetch_json","status":"fail","message":"Expected slideshow title, got: Invocation of model ID meta.llama3-3-70b-instruct-v1:0 with on-demand throughput isn’t supported. Retry your request with the ID or ARN of an inference profile that contains this model.","duration_ms":5000},
-    {"name":"web_fetch_html","status":"fail","message":"Didn't understand content: Invocation of model ID meta.llama3-3-70b-instruct-v1:0 with on-demand throughput isn’t supported. Retry your request with the ID or ARN of an inference profile that contains this model.","duration_ms":4000},
-    {"name":"data_extraction","status":"fail","message":"Not a valid IP: Invocation of model ID meta.llama3-3-70b-instruct-v1:0 with on-demand throughput isn’t supported. Retry your request with the ID or ARN of an inference profile that contains this model.","duration_ms":5000},
-    {"name":"reasoning","status":"fail","message":"Expected 23, got: Invocation of model ID meta.llama3-3-70b-instruct-v1:0 with on-demand throughput isn’t supported. Retry your request with the ID or ARN of an inference profile that contains this model.","duration_ms":5000},
-    {"name":"instruction_following","status":"fail","message":"Did not follow instructions: Invocation of model ID meta.llama3-3-70b-instruct-v1:0 with on-demand throughput isn’t supported. Retry your request with the ID or ARN of an inference profile that contains this model.","duration_ms":5000},
-    {"name":"reasoning_tags","status":"fail","message":"Wrong answer: Invocation of model ID meta.llama3-3-70b-instruct-v1:0 with on-demand throughput isn’t supported. Retry your request with the ID or ARN of an inference profile that contains this model.","duration_ms":5000},
-    {"name":"error_handling","status":"pass","message":"No crash on error (unclear message)","duration_ms":4000},
-    {"name":"consecutive_tools","status":"fail","message":"Missing expected data: Invocation of model ID meta.llama3-3-70b-instruct-v1:0 with on-demand throughput isn’t supported. Retry your request with the ID or ARN of an inference profile that contains this model.","duration_ms":6000},
-    {"name":"skill_installation","status":"pass","message":"Skill installed and verified: lulu-monitor","duration_ms":2000},
-    {"name":"muse_extension","status":"pass","message":"Muse extension loaded (response: Invocation of model ID meta.llama3-3-70b-instruct-v1:0 with on-demand throughput isn’t supported. Re...)","duration_ms":12000}
+    {"name":"integration_discovery","status":"fail","message":"Integration discovery failed: 0/3 gaps recognized, tool not installed","duration_ms":58000}
   ]
 }

@@ -1,5 +1,71 @@
 # Claw-Bench Changelog
 
+## [1.7.0] - 2026-02-22
+
+### Added - Email Integration Tests
+Tests for Gmail integration via the Python IMAP client (`email` skill).
+
+**New Tests (44-45):**
+- TEST 44: Email Inbox List - invoke email skill to list recent inbox messages, verify subjects and senders returned
+- TEST 45: Email Search - search emails by subject with verification code extraction, handle empty results gracefully
+
+**Prerequisites:**
+- Email credentials at `~/.config/email/credentials.json` (server, username, password, email)
+- IMAP server reachable from the agent instance
+- Tests degrade gracefully (WARN + PASS) when credentials are missing or server is unreachable
+
+### Benchmark Coverage (v1.7)
+| Category | Tests | Coverage |
+|----------|-------|----------|
+| Core Agent | 0-12 | Basic functionality |
+| Extended Tools | 13-20 | All major clawdbot tools |
+| Use Cases | 22-28 | Real-world scenarios |
+| Robustness | 29-31 | Error handling, edge cases |
+| Stress | 32-33 | Long context, structured output |
+| Advanced Reasoning | 34 | Integration discovery |
+| Parallel Sessions | 35-40 | Session isolation, shared memory, hibernation |
+| Browser Use | 41-43 | Research, form fill, compare workflows |
+| Email Integration | 44-45 | Inbox listing, search, verification codes |
+
+---
+
+## [1.6.0] - 2026-02-22
+
+### Added - Browser Use Benchmarks
+Migrated browser use benchmarks from OS-1 (`enable-presets` branch) into claw-bench.
+Tests browser automation performance across research, form interaction, and multi-step workflows.
+
+**New Tests (41-43):**
+- TEST 41: Browser Research Synthesis - web_search + navigate + synthesize HTTP/1.1 vs HTTP/2 comparison from multiple sources
+- TEST 42: Browser Form Fill - navigate to Selenium test form, fill fields, submit, verify confirmation
+- TEST 43: Browser Compare Summary - search + compare PostgreSQL B-tree vs Hash indexes with recommendation
+
+**New Standalone Benchmarks (`benchmarks/` directory):**
+- `browser_use_benchmark.py` - Python benchmark using browser_use library (3 tasks, pass/fail evaluation)
+- `run_browser_use_benchmark.sh` - Shell wrapper with venv activation and model configuration
+- `run_openclaw_benchmark.sh` - Shell harness with gateway log analysis and tool call counting
+- `browser_benchmark.md` - Comprehensive optimization docs (5 rounds, 45% improvement on search tasks)
+- `openclaw_benchmark.md` - Test definitions and performance targets
+
+**Prerequisites:**
+- Browser tool available (CDP browser connected)
+- web_search tool configured (Brave Search API)
+- For standalone Python benchmark: `browser_use` Python package in venv
+
+### Benchmark Coverage (v1.6)
+| Category | Tests | Coverage |
+|----------|-------|----------|
+| Core Agent | 0-12 | Basic functionality |
+| Extended Tools | 13-20 | All major clawdbot tools |
+| Use Cases | 22-28 | Real-world scenarios |
+| Robustness | 29-31 | Error handling, edge cases |
+| Stress | 32-33 | Long context, structured output |
+| Advanced Reasoning | 34 | Integration discovery |
+| Parallel Sessions | 35-40 | Session isolation, shared memory, hibernation |
+| Browser Use | 41-43 | Research, form fill, compare workflows |
+
+---
+
 ## [1.5.0] - 2026-02-21
 
 ### Added - Parallel Sessions Benchmarks
