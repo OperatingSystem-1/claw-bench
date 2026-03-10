@@ -96,6 +96,17 @@ e2e_scp_from() {
   scp -i "$key" $E2E_SSH_OPTS ubuntu@"$E2E_PUBLIC_IP":"$remote" "$local_path" 2>/dev/null
 }
 
+# Copy a file to the instance.
+# Usage: e2e_scp_to "/local/path" "/remote/path"
+e2e_scp_to() {
+  local local_path="$1"
+  local remote="$2"
+  local key="${CLAW_SSH_KEY:-$HOME/.ssh/id_rsa}"
+  key="${key/#\~/$HOME}"
+
+  scp -i "$key" $E2E_SSH_OPTS "$local_path" ubuntu@"$E2E_PUBLIC_IP":"$remote" 2>/dev/null
+}
+
 #=============================================================================
 # HTTP Helpers (via SSH tunnel)
 #=============================================================================
@@ -139,6 +150,12 @@ e2e_timer_ms() {
 #=============================================================================
 
 e2e_init() {
+  # Source .env for SSH key and other config
+  if [ -f "$CLAW_BENCH_DIR/.env" ]; then
+    # shellcheck source=/dev/null
+    source "$CLAW_BENCH_DIR/.env"
+  fi
+
   # Require AMI ID
   E2E_AMI_ID="${E2E_AMI_ID:?Error: E2E_AMI_ID (or --ami) must be set}"
   export CLAWGO_AMI_ID="$E2E_AMI_ID"
