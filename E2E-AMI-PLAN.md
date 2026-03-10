@@ -151,7 +151,7 @@ bake-ami.sh → AMI created (unvalidated)
     │     ├─ PASS → tag "llm=pass"
     │     └─ FAIL → tag "llm=fail", alert
     │
-    └─→ All gates pass → update CLAWGO_AMI_ID on Vercel
+    └─→ All gates pass → update CLAWGO_AMI_ID on Railway
 ```
 
 ---
