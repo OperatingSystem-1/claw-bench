@@ -13,7 +13,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BENCH_DIR="$(dirname "$SCRIPT_DIR")"
 
-# Load environment
+# Load environment (preserve already-exported vars like CLAWGO_AMI_ID)
+_SAVED_AMI_ID="${CLAWGO_AMI_ID:-}"
 if [ -f "$BENCH_DIR/.env" ]; then
   set -a
   source "$BENCH_DIR/.env"
@@ -24,6 +25,8 @@ elif [ -f "$BENCH_DIR/../.env.local" ]; then
   source "$BENCH_DIR/../.env.local"
   set +a
 fi
+# Restore pre-existing export (--ami flag takes precedence over .env)
+[ -n "$_SAVED_AMI_ID" ] && CLAWGO_AMI_ID="$_SAVED_AMI_ID"
 
 # Configuration with defaults
 AWS_REGION="${AWS_REGION:-us-east-2}"
