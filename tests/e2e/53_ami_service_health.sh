@@ -2,8 +2,8 @@
 # Test 53: AMI Service Health
 # Validates systemd service is active and gateway is healthy.
 #
-# Pass: clawdbot.service active, gateway responding, no crash loops
-# Fail: Service not running or unhealthy
+# Pass: clawdbot.service active, gateway responding, no crash loops, wacli-sync installed
+# Fail: Service not running, unhealthy, or wacli-sync missing
 
 test_ami_service_health() {
   claw_header "TEST 53: AMI Service Health"
@@ -47,6 +47,19 @@ test_ami_service_health() {
     claw_info "Port 18789: listening"
   else
     claw_fail "Nothing listening on port 18789" "ami_service_port" "0"
+    failures=$((failures + 1))
+  fi
+
+  # Check wacli-sync.service is installed (user-level)
+  # It won't be "active" until WhatsApp is authenticated, but the unit file must exist
+  local wacli_svc
+  wacli_svc=$(e2e_ssh "systemctl --user is-enabled wacli-sync.service 2>/dev/null" || echo "not-found")
+  if [ "$wacli_svc" = "enabled" ]; then
+    claw_info "wacli-sync.service: enabled (starts after wacli auth)"
+  elif [ "$wacli_svc" = "disabled" ] || [ "$wacli_svc" = "static" ]; then
+    claw_warn "wacli-sync.service: installed but not enabled"
+  else
+    claw_fail "wacli-sync.service: not installed" "ami_service_wacli_sync" "0"
     failures=$((failures + 1))
   fi
 

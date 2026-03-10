@@ -18,6 +18,7 @@ test_ami_component_check() {
     "curl"
     "git"
     "python3"
+    "wacli"
   )
 
   for bin in "${bins[@]}"; do
