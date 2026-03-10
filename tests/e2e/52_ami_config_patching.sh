@@ -16,16 +16,25 @@ test_ami_config_patching() {
     return
   fi
 
-  # Check for unreplaced placeholders
-  local placeholders
-  placeholders=$(e2e_ssh "grep -c '__[A-Z_]*__' ~/.clawdbot/clawdbot.json 2>/dev/null" || echo "0")
-  if [ "$placeholders" != "0" ]; then
-    local found
-    found=$(e2e_ssh "grep -o '__[A-Z_]*__' ~/.clawdbot/clawdbot.json | sort -u | head -5" || echo "unknown")
-    claw_fail "Found $placeholders unreplaced placeholders: $found" "ami_config_placeholders" "0"
+  # Check for unreplaced BOOT-TIME placeholders (replaced by patch-config.sh at boot)
+  # Note: __AGENT_NAME__ and __BRAVE_API_KEY__ are RUNTIME placeholders replaced
+  # by apply-env.sh via env-sync — they are expected to remain until the dashboard
+  # pushes BOT_NAME and BRAVE_API_KEY.
+  local boot_placeholders
+  boot_placeholders=$(e2e_ssh "grep -o '__[A-Z_]*__' ~/.clawdbot/clawdbot.json | grep -v '__AGENT_NAME__' | grep -v '__BRAVE_API_KEY__' | sort -u" || echo "")
+  if [ -n "$boot_placeholders" ]; then
+    local count
+    count=$(echo "$boot_placeholders" | wc -l | tr -d ' ')
+    claw_fail "Found $count unreplaced boot placeholders: $boot_placeholders" "ami_config_placeholders" "0"
     failures=$((failures + 1))
   else
-    claw_info "No unreplaced placeholders in clawdbot.json"
+    claw_info "No unreplaced boot placeholders in clawdbot.json"
+  fi
+  # Report runtime placeholders as informational
+  local runtime_placeholders
+  runtime_placeholders=$(e2e_ssh "grep -o '__[A-Z_]*__' ~/.clawdbot/clawdbot.json | grep -E '__AGENT_NAME__|__BRAVE_API_KEY__' | sort -u" || echo "")
+  if [ -n "$runtime_placeholders" ]; then
+    claw_info "Runtime placeholders present (replaced by env-sync): $(echo "$runtime_placeholders" | tr '\n' ' ')"
   fi
 
   # Check instance secret is set (not empty/placeholder)
