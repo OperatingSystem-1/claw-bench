@@ -1,1 +1,14 @@
-
+{
+  "timestamp": "2026-02-11T01:05:45Z",
+  "model": "unknown",
+  "session": "bench-74441-1770771866",
+  "results": {
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
+    "critical": 0
+  },
+  "tests": [
+    {"name":"integration_discovery","status":"fail","message":"Integration discovery failed: 0/3 gaps recognized, tool not installed","duration_ms":79000}
+  ]
+}

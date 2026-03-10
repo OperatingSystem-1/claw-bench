@@ -16,6 +16,7 @@ MODELS_FILE="${SCRIPT_DIR}/models-to-test.json"
 : "${CLAW_HOST:?Error: CLAW_HOST must be set (e.g., ubuntu@your-bot-ip)}"
 : "${CLAW_SSH_KEY:=$HOME/.ssh/id_rsa}"
 CLAW_SSH_OPTS="-o StrictHostKeyChecking=no -o ConnectTimeout=10"
+BENCH_TEST_FILTER=""
 
 # Colors
 RED='\033[0;31m'
@@ -95,7 +96,9 @@ run_benchmark() {
 
     # Run benchmark with JSON output
     local raw_output json_result
-    raw_output=$(CLAW_HOST="$CLAW_HOST" CLAW_SSH_KEY="$CLAW_SSH_KEY" "${SCRIPT_DIR}/run.sh" --ssh --json 2>&1) || true
+    local test_flag=""
+    [ -n "$BENCH_TEST_FILTER" ] && test_flag="--test $BENCH_TEST_FILTER"
+    raw_output=$(CLAW_HOST="$CLAW_HOST" CLAW_SSH_KEY="$CLAW_SSH_KEY" "${SCRIPT_DIR}/run.sh" --ssh --json $test_flag 2>&1) || true
 
     # Extract JSON from the end of the output (everything from { to final })
     # The JSON starts with a { on its own line and ends with } on its own line
@@ -187,10 +190,23 @@ echo "║              CLAW-BENCH Multi-Model Benchmark                    ║"
 echo "╚══════════════════════════════════════════════════════════════════╝"
 echo ""
 
+# Parse arguments: [--test N] [model-key]
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --test)
+            BENCH_TEST_FILTER="$2"
+            shift 2
+            ;;
+        *)
+            MODEL_FILTER="$1"
+            shift
+            ;;
+    esac
+done
+
 # Get models to test
-if [ $# -gt 0 ]; then
+if [ -n "${MODEL_FILTER:-}" ]; then
     # Test specific model
-    MODEL_FILTER="$1"
     MODELS=$(jq -c ".models[] | select(.key == \"$MODEL_FILTER\")" "$MODELS_FILE")
     if [ -z "$MODELS" ]; then
         echo -e "${RED}Error: Model '$MODEL_FILTER' not found in $MODELS_FILE${NC}"

@@ -20,6 +20,7 @@ export CLAW_BENCH_DIR
 # Parse arguments
 CLAW_MODE=""
 CLAW_OUTPUT="human"
+CLAW_TEST_FILTER=""
 
 usage() {
   cat <<EOF
@@ -31,6 +32,7 @@ Usage:
   ./run.sh --api [options]        Run against gateway API
 
 Options:
+  --test N        Run only test number N (e.g., --test 34)
   --json          Output results as JSON
   --tap           Output results as TAP format
   --help          Show this help
@@ -51,6 +53,9 @@ Examples:
 
   # JSON output for CI
   ./run.sh --local --json > results.json
+
+  # Run a single test
+  ./run.sh --ssh --test 34
 
 EOF
   exit 0
@@ -77,6 +82,10 @@ while [[ $# -gt 0 ]]; do
     --tap)
       CLAW_OUTPUT="tap"
       shift
+      ;;
+    --test)
+      CLAW_TEST_FILTER="$2"
+      shift 2
       ;;
     --help|-h)
       usage
@@ -171,9 +180,17 @@ if [ "$CLAW_OUTPUT" = "human" ]; then
   esac
 fi
 
-# Load and run all tests
+# Load and run tests
 for test_file in "${CLAW_BENCH_DIR}"/tests/*.sh; do
   if [ -f "$test_file" ]; then
+    # Extract test number from filename (e.g., "34" from "34_integration_discovery.sh")
+    test_num=$(basename "$test_file" .sh | grep -o '^[0-9]*')
+
+    # Skip if --test filter is set and doesn't match
+    if [ -n "$CLAW_TEST_FILTER" ] && [ "$test_num" != "$CLAW_TEST_FILTER" ]; then
+      continue
+    fi
+
     # shellcheck source=/dev/null
     source "$test_file"
 
