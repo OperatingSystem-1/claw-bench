@@ -56,6 +56,29 @@ test_ami_component_check() {
   claw_ver=$(e2e_ssh "clawdbot --version 2>&1" || echo "unknown")
   claw_info "clawdbot: $claw_ver"
 
+  # Workspace scripts
+  local -a scripts=(
+    "~/clawd/scripts/conversation-context.py"
+    "~/clawd/scripts/speaker-tracker.py"
+  )
+  for script in "${scripts[@]}"; do
+    if e2e_ssh "test -f $script"; then
+      claw_info "$(basename $script): found"
+    else
+      claw_fail "$(basename $script): NOT FOUND in workspace" "ami_component_script" "0"
+      all_pass=false
+    fi
+  done
+
+  # ClawdHub skills
+  local skill_count
+  skill_count=$(e2e_ssh "clawdhub list 2>/dev/null | wc -l" || echo "0")
+  if [ "$skill_count" -gt 0 ]; then
+    claw_info "ClawdHub skills: $skill_count installed"
+  else
+    claw_warn "No ClawdHub skills installed"
+  fi
+
   if [ "$all_pass" = true ]; then
     claw_pass "All required components present" "ami_component_check" "$(e2e_timer_ms "$t")"
   fi
