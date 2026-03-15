@@ -22,3 +22,6 @@ config.sh
 # Logs (may contain sensitive data)
 logs/
 *.log
+
+# Project documentation (tracked: reference guides, analyses, reports)
+# Note: .os1/ is tracked in git - do not add .os1/ to this .gitignore
