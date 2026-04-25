@@ -45,15 +45,27 @@ claw_init() {
   CLAW_SSH_KEY="${CLAW_SSH_KEY:-$HOME/.ssh/id_rsa}"
   CLAW_SSH_OPTS="${CLAW_SSH_OPTS:--o StrictHostKeyChecking=no -o ConnectTimeout=10}"
 
+  # K8s mode config
+  CLAW_K8S_CONTEXT="${CLAW_K8S_CONTEXT:-arn:aws:eks:us-east-2:856898221895:cluster/os1-production}"
+  CLAW_K8S_NAMESPACE="${CLAW_K8S_NAMESPACE:-}"
+  CLAW_K8S_AGENT="${CLAW_K8S_AGENT:-}"
+
   # Validate mode
   case "${CLAW_MODE:-}" in
-    local|ssh|api)
+    local|ssh|api|k8s)
       ;;
     *)
-      echo "Error: CLAW_MODE must be 'local', 'ssh', or 'api'" >&2
+      echo "Error: CLAW_MODE must be 'local', 'ssh', 'api', or 'k8s'" >&2
       exit 3
       ;;
   esac
+
+  if [ "$CLAW_MODE" = "k8s" ]; then
+    if [ -z "$CLAW_K8S_NAMESPACE" ] || [ -z "$CLAW_K8S_AGENT" ]; then
+      echo "Error: CLAW_K8S_NAMESPACE and CLAW_K8S_AGENT required for k8s mode" >&2
+      exit 3
+    fi
+  fi
 }
 
 #=============================================================================
@@ -85,6 +97,38 @@ claw_ask() {
       json_result=$(ssh -n -i "$CLAW_SSH_KEY" $CLAW_SSH_OPTS "$CLAW_HOST" \
         "timeout $CLAW_TIMEOUT clawdbot agent --session-id '$call_session' --message \"\$(echo '$encoded_message' | base64 -d)\" --json 2>/dev/null" \
         2>/dev/null) || json_result='{"error":"timeout"}'
+      ;;
+
+    k8s)
+      # openclaw writes JSON to stderr; use temp file to avoid shell escaping issues
+      local k8s_tmp="/tmp/claw-bench-k8s-$$.raw"
+      timeout "$CLAW_TIMEOUT" kubectl --context "$CLAW_K8S_CONTEXT" \
+        -n "$CLAW_K8S_NAMESPACE" exec "${CLAW_K8S_AGENT}-0" -c openclaw -- \
+        openclaw agent --agent main --local \
+        -m "$message" --json > "$k8s_tmp" 2>&1 || echo '{"error":"timeout"}' > "$k8s_tmp"
+      # Extract the payloads JSON and wrap to match clawdbot format
+      json_result=$(python3 -c "
+import json
+with open('$k8s_tmp') as f:
+    content = f.read()
+i = 0
+while i < len(content):
+    if content[i] == '{':
+        try:
+            obj, end = json.JSONDecoder().raw_decode(content, i)
+            if 'payloads' in obj:
+                print(json.dumps({'result': obj}))
+                raise SystemExit(0)
+            i = i + end
+        except SystemExit:
+            raise
+        except:
+            i += 1
+    else:
+        i += 1
+print(json.dumps({'error': 'no_payloads_in_response'}))
+" 2>/dev/null) || json_result='{"error":"json_parse_failed"}'
+      rm -f "$k8s_tmp"
       ;;
 
     api)
@@ -136,6 +180,36 @@ claw_ask_json() {
       result=$(ssh -n -i "$CLAW_SSH_KEY" $CLAW_SSH_OPTS "$CLAW_HOST" \
         "timeout $CLAW_TIMEOUT clawdbot agent --session-id '$CLAW_SESSION' --message \"\$(echo '$encoded_message' | base64 -d)\" --json 2>/dev/null" \
         2>/dev/null)
+      ;;
+
+    k8s)
+      local k8s_json_tmp="/tmp/claw-bench-k8s-json-$$.raw"
+      timeout "$CLAW_TIMEOUT" kubectl --context "$CLAW_K8S_CONTEXT" \
+        -n "$CLAW_K8S_NAMESPACE" exec "${CLAW_K8S_AGENT}-0" -c openclaw -- \
+        openclaw agent --agent main --local \
+        -m "$message" --json > "$k8s_json_tmp" 2>&1
+      result=$(python3 -c "
+import json
+with open('$k8s_json_tmp') as f:
+    content = f.read()
+i = 0
+while i < len(content):
+    if content[i] == '{':
+        try:
+            obj, end = json.JSONDecoder().raw_decode(content, i)
+            if 'payloads' in obj:
+                print(json.dumps({'result': obj}))
+                raise SystemExit(0)
+            i = i + end
+        except SystemExit:
+            raise
+        except:
+            i += 1
+    else:
+        i += 1
+print(json.dumps({'error': 'no_payloads_in_response'}))
+" 2>/dev/null)
+      rm -f "$k8s_json_tmp"
       ;;
 
     api)

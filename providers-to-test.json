@@ -1,0 +1,42 @@
+{
+  "providers": [
+    {
+      "key": "bedrock-sonnet",
+      "provider": "amazon-bedrock",
+      "api": "bedrock-converse-stream",
+      "auth": "aws-sdk",
+      "baseUrl": "https://bedrock-runtime.us-east-2.amazonaws.com",
+      "modelId": "us.anthropic.claude-sonnet-4-6",
+      "modelName": "sonnet",
+      "contextWindow": 200000,
+      "maxTokens": 8192,
+      "notes": "Anthropic Sonnet via Bedrock (subject to RPM quotas)"
+    },
+    {
+      "key": "gemini-flash",
+      "provider": "google",
+      "api": "google-generative-ai",
+      "auth": "api-key",
+      "baseUrl": "https://generativelanguage.googleapis.com/v1beta",
+      "modelId": "gemini-2.5-flash",
+      "modelName": "sonnet",
+      "contextWindow": 1048576,
+      "maxTokens": 65536,
+      "secretName": "google-gemini-{officeId}",
+      "notes": "Google Gemini Flash — high quota, user-funded"
+    },
+    {
+      "key": "openai-codex",
+      "provider": "openai-codex",
+      "api": "responses",
+      "auth": "api-key",
+      "baseUrl": "https://api.openai.com/v1",
+      "modelId": "gpt-5.5",
+      "modelName": "gpt-5.5",
+      "contextWindow": 1000000,
+      "maxTokens": 100000,
+      "secretName": "openai-codex-{officeId}",
+      "notes": "OpenAI Codex — user-funded"
+    }
+  ]
+}
