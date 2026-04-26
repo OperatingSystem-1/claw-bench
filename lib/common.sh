@@ -105,7 +105,9 @@ claw_ask() {
       timeout "$CLAW_TIMEOUT" kubectl --context "$CLAW_K8S_CONTEXT" \
         -n "$CLAW_K8S_NAMESPACE" exec "${CLAW_K8S_AGENT}-0" -c openclaw -- \
         openclaw agent --agent main --local \
-        -m "$message" --json > "$k8s_tmp" 2>&1 || echo '{"error":"timeout"}' > "$k8s_tmp"
+        -m "$message" --json > "$k8s_tmp" 2>&1
+      # Only write timeout error if the file is empty (openclaw may exit non-zero but still produce output)
+      [ ! -s "$k8s_tmp" ] && echo '{"error":"timeout"}' > "$k8s_tmp"
       # Extract the payloads JSON and wrap to match clawdbot format
       json_result=$(python3 -c "
 import json

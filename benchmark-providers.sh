@@ -66,7 +66,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-export CLAW_MODE CLAW_K8S_NAMESPACE CLAW_K8S_AGENT CLAW_OUTPUT
+export CLAW_MODE CLAW_K8S_NAMESPACE CLAW_K8S_AGENT CLAW_K8S_CONTEXT CLAW_OUTPUT
 claw_init
 
 # Load provider tests
