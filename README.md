@@ -2,7 +2,29 @@
 
 A comprehensive benchmark suite for testing [clawdbot](https://github.com/openclaw/clawdbot) agents.
 
-## Benchmark Scores (2026-02-10)
+## Benchmark Scores
+
+### New Models — Live Production Testing (2026-05-19)
+
+Tested on production agents (os1-reed, Cloud Ridge office) via Bedrock Converse API + openclaw agent CLI.
+
+| Rank | Model | Latency | Tool Use | Self-Improvement | Identity Following | Notes | Report |
+|------|-------|---------|----------|------------------|--------------------|-------|--------|
+| 🥇 | **Claude Sonnet 4.6** | ~1s | ✅ Best | ✅ Follows weak rules | ✅ Best | Daily token quota can exhaust | [✅ Report](./reports/bedrock-new-models-may2026.md) |
+| 🥈 | **Qwen 3 235B** | 0.2s | ✅ Good | ✅ Follows weak rules | ✅ Good | Best value, MoE, no rate limits observed | [✅ Report](./reports/bedrock-new-models-may2026.md) |
+| 🥉 | **GLM 4.7** | 0.2s | ✅ Good | ⚠️ Needs strong rules | ✅ Good | Ignores vague instructions, follows "CRITICAL RULE:" | [✅ Report](./reports/bedrock-new-models-may2026.md) |
+| 4 | GLM 4.7 Flash | 0.2s | Untested | Untested | Untested | Faster variant | [✅ Report](./reports/bedrock-new-models-may2026.md) |
+| 5 | Mistral Large 3 675B | 0.2s | ⚠️ Weak | Untested | ❌ Poor | Doesn't follow agent CLAUDE.md instructions, defaults to HTTP fetch | [✅ Report](./reports/bedrock-new-models-may2026.md) |
+| 6 | GLM 5 | Untested | Untested | Untested | Untested | Latest Z.AI | — |
+| 7 | Qwen 3 Coder 480B | Untested | Untested | Untested | Untested | Code-focused MoE | — |
+
+**Key findings:**
+- All non-Claude Bedrock models have ON_DEMAND access (no inference profile needed, no daily token quota)
+- Spreading agents across providers avoids quota exhaustion
+- Self-improvement (CLAUDE-LEARNED.md) works with all models but weaker models need stronger rule phrasing
+- All models accessible via updated IAM policy v8 (allows `arn:aws:bedrock:*::foundation-model/*`)
+
+### Original Benchmark (2026-02-10)
 
 Ranked by pass rate (best first). All Bedrock tests unless noted.
 
